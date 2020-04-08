@@ -1,0 +1,62 @@
+{
+  "name": "@imbueplatform/cell",
+  "version": "0.0.1",
+  "description": "Imbue Network Cell",
+  "bin": {
+    "imbue-cell": "./bin/imbue-cell"
+  },
+  "scripts": {
+    "postinstall": "npx tsc",
+    "prepublishOnly": "npx tsc",
+    "imbue:dev": "tsc-watch --onSuccess \"node ./bin/imbue-cell\"",
+    "imbue:test": "npx tsc && NODE_ENV=test LOG_LEVEL=off jest test/*.test.js",
+    "print:project": "asciify ' @imbueplatform/cell ' -f puffy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com:imbueplatform/imbue-cell.git"
+  },
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "dependencies": {
+    "@types/pump": "^1.1.0",
+    "@types/debug": "^4.1.5",
+    "typescript": "^3.8.3",
+    "hyperswarm": "^2.11.1",
+    "pump": "^3.0.0",
+    "debug": "^4.1.1"
+  },
+  "devDependencies": {},
+  "lint-staged": {
+    "*.js": [
+      "tslint --format codeframe --fix",
+      "git add"
+    ],
+    "*.{json,yaml,yml,md}": [
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "jest": {
+    "verbose": true,
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
+    "testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "keywords": [
+    "cell",
+    "imbue",
+    "imbueplatform"
+  ],
+  "author": "Sasa Savic, <sasa@imbue.app>",
+  "license": "MIT"
+}
