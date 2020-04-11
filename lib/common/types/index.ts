@@ -46,3 +46,11 @@ export interface PeerConfig {
 export interface SocketCallback {
     (err?: Error, socket?: net.Socket): void
 }
+
+export interface AnnounceConfig {
+    [key: string]: any,
+    lookup: boolean,
+    includeLength: boolean,
+    port: number,
+    length: number
+}

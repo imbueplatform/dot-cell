@@ -5,8 +5,8 @@ import Nanoresource from 'nanoresource';
 import Discovery from '@hyperswarm/discovery'
 import Debug from 'debug';
 
-import { NetworkConstructConfig, PeerConfig } from '../common/types';
-import { pause, backoff, listen, listenTcpUdp, localIpAddress, noop } from "../common/utils";
+import { NetworkConstructConfig, ErrorFunction, AnnounceConfig } from '../common/types';
+import { backoff, listenTcpUdp, localIpAddress, noop } from "../common/utils";
 import { Peer } from './peer';
 
 const debug = Debug("imbue:cell:network");
@@ -59,12 +59,20 @@ export class CellNetworkResource extends Nanoresource {
         return this._sockets;
     }
 
-    public attach(): void {
-        debug("attaching to %0", this._config.port);
-        return this.open(this._config.port || 0);
+    public attach(): Promise<any> {
+        debug("attaching to ", this._config.port);
+        return new Promise((res, rej) => {
+            this.open((err: Error) => {
+                if (err) return rej(err);
+                return res();
+            });
+        });
     }
 
     public async connect(peer: any): Promise<net.Socket> {
+
+        debug("connecting to peer: ", peer);
+
         return new Peer({
             peer: peer,
             connectionTimeout: 10000,
@@ -73,21 +81,74 @@ export class CellNetworkResource extends Nanoresource {
     }
 
     public lookupOne(key: Buffer): Promise<any> {
+
+        debug('performing lookupOne:', key);
+
         return new Promise((res, rej) => {
-            if(key.length !== 32)
+            if (!this._discovery)
+                return rej('you need to attach to the network');
+
+            if (key.length !== 32)
                 return rej('Key should be a 32 byte buffer');
-            
+
             const localAddress = this.getLocalAddress();
 
-            debug('got local address: %0', localAddress)
-
             this._discovery.lookupOne(key, { localAddress }, (err: Error, peer: any) => {
-                if(err)
+                debug('any lookup err?', err);
+                if (err)
                     return rej("discovery error");
                 return res(peer);
             });
         });
     }
+
+    public lookup(key: Buffer, includeLength: boolean = false): Promise<any> {
+
+        debug('performing lookup:', key);
+
+        return new Promise((res, rej) => {
+            if (!this._discovery)
+                return rej('you need to attach to the network');
+
+            if (key.length !== 32)
+                return rej('Key should be a 32 byte buffer');
+
+            const localAddress = this.getLocalAddress();
+
+            let topic: any = this._discovery.lookup(key, { localAddress, includeLength });
+
+            return res(topic);
+        });
+    }
+
+    public announce(key: Buffer, config: AnnounceConfig = { lookup: false, includeLength: false, length, port: 0 }): Promise<any> {
+
+        debug('performing announce:', key);
+
+        return new Promise((res, rej) => {
+            if (!this._discovery)
+                return rej('you need to attach to the network');
+
+            if (key.length !== 32)
+                return rej('Key should be a 32 byte buffer');
+
+            const localAddress = this.getLocalAddress();
+
+            config = Object.assign(config,{
+                port: config.port || (this.address as net.AddressInfo).port,
+                localAddress: localAddress,
+                includeLength: config.includeLength || false,
+                length: config.length || 0
+            })
+
+            debug('announce config:', config);
+
+            let topic: any = this._discovery.announce(key, config)
+            
+            return res(topic);
+        });
+    }
+
 
     private init(): void {
         debug("initialising TCP and UTP server ...");
@@ -96,13 +157,16 @@ export class CellNetworkResource extends Nanoresource {
     }
 
     private onConnection(isTcp: Boolean, socket: net.Socket): void {
-        if(isTcp)
+        if (isTcp)
             socket.setNoDelay(true);
         else
             socket.on("end", () => this.end())
-            
+
+
+        debug('onConnection -> adding socket');
+
         this._sockets.add(socket);
-        
+
         socket.on("close", this.removeSocket.bind(this, socket));
 
         this._config.onSocket(socket, isTcp);
@@ -114,71 +178,76 @@ export class CellNetworkResource extends Nanoresource {
     }
 
     private getLocalAddress(): { host: string, port: number } | undefined {
-        if(!this._config.announce)
+        if (!this._config.announce)
             return undefined;
 
         const ipAddress = localIpAddress();
 
-        if(!ipAddress) 
+        if (!ipAddress)
             return undefined;
-
-        debug('got local IP address: %0', ipAddress)
 
         return {
             host: ipAddress,
-            port: (this._tcpServer.address() as net.AddressInfo).port
+            port: (this.address as net.AddressInfo).port
         }
     }
 
     private createDiscovery(): any {
         let { ephemeral, bootstrap } = this._config;
+
+        debug('creating discovery channel...', ephemeral, bootstrap);
+
         return Discovery({
-            bootstrap,
-            ephemeral,
+            bootstrap: bootstrap,
+            ephemeral: ephemeral,
             socket: this._utpServer
         })
     }
 
-    private _open(cb: Function): void {
+    private _open(callback: ErrorFunction): void {
+
+        debug("starting network attach runner...");
 
         let runner = (): Promise<void> => {
             return listenTcpUdp(this._tcpServer, this._utpServer, this._config.port as number).then(() => {
+
                 this._discovery = this.createDiscovery();
                 this._config.onBind();
+                callback();
             });
         };
 
         backoff(5, runner, 500)
     }
 
-    private _close(cb: Function): void {
-        
+    private _close(callback: ErrorFunction): void {
+
         let missing = 2
 
         let onClose = () => {
-            if (--missing) 
+            if (--missing)
                 return;
 
             this._discovery = undefined;
             this._config.onClose();
 
-            cb();
+            callback();
         }
 
         let onDiscoveryClose = () => {
 
             this._sockets.forEach((socket) => socket.destroy())
             this._sockets.clear()
-      
+
             this._tcpServer.close()
             this._utpServer.close()
-      
+
             this._tcpServer.on('close', onClose)
             this._utpServer.on('close', onClose)
-      
+
         }
-    
+
         this._discovery.destroy()
         this._discovery.on('close', onDiscoveryClose)
-      }
+    }
 }

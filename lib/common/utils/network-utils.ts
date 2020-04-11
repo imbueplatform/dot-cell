@@ -1,9 +1,10 @@
 
 import os from 'os';
 import net from 'net';
-
+import Debug from 'debug';
 import { NetworkInterfaceInfo, ErrorFunction } from '../types';
 
+const debug = Debug("imbue:cell:network-utils");
 
 /**
  * Get the local IPv4 Address
@@ -30,25 +31,30 @@ export const listen = (server: net.Server, port: number = 0, callback?: ErrorFun
 
     ["listening", "error"].forEach((listener) => server.on(listener, done));
 
-    return server.listen(port);
+    server.listen(port);
+
+    return server;
 }
 
-export const listenTcpUdp = (tcpServer: net.Server, udpServer: net.Server, port: number): Promise<void> => {
+export const listenTcpUdp = (tcpServer: net.Server, utpServer: net.Server, port: number): Promise<void> => {
 
     return new Promise((res, rej) => {
         listen(tcpServer, port, (err) => {
             if(err) return rej(err);
 
-            listen(udpServer, (tcpServer.address() as net.AddressInfo).port, (err) => {
-                if(err) return rej(err);
+            debug(`listening on tcp:`, tcpServer.address());
 
-                tcpServer.once("close", () => rej(err));
-                tcpServer.close();
+            listen(utpServer, (tcpServer.address() as net.AddressInfo).port, (err) => {
+                if(err) {
+                    tcpServer.once("close", () => rej(err));
+                    tcpServer.close();
+                    return rej(err);
+                }
 
-                return;
+                debug(`listening on utp: `, utpServer.address());
+
+                return res();
             });
-
-            return res();
         });
     });
 }

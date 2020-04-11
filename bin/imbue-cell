@@ -1,3 +1,56 @@
 #! /usr/bin/env node
 
-let {} = require('../dist')
+let { CellNetworkResource } = require('../dist')
+
+
+let key = Buffer.alloc(32);
+
+let onSocket = (socket, isTcp) => {
+    console.log('socket connected...')
+}
+
+let onClose = () => {
+    console.log('closing...')
+}
+
+let onBind = () => {
+    console.log('binding...')
+}
+
+let announcer = new CellNetworkResource({
+    announce: true,
+    broadcastLocalAddress: true,
+    ephemeral: true,
+    port: 10000,
+    onSocket: onSocket,
+    onBind: onBind,
+    onClose: onClose
+});
+
+let cnr2 = new CellNetworkResource({
+    announce: true,
+    broadcastLocalAddress: true,
+    ephemeral: true,
+    port: 10010,
+    onSocket: onSocket,
+    onBind: onBind,
+    onClose: onClose
+});
+
+announcer.attach().then(() => {
+    return announcer.announce(key, {
+        lookup: true
+    });
+}).then((topic) => {
+    topic.on('peer', console.log);
+}).catch((err) => console.log(err))
+
+
+cnr2.attach()
+    .then(() => {
+        return cnr2.lookup(key);
+    }).then((topic) => {
+        topic.on('peer', console.log);
+    });
+
+    
