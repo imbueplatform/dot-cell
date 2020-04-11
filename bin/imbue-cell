@@ -1,1 +1,42 @@
 #! /usr/bin/env node
+let crypto = require('crypto');
+let { Cell } = require('../dist/index');
+
+const key = crypto.randomBytes(32);
+
+
+console.log(`Your key: ${key.toString('hex')}`);
+
+let cell = new Cell({
+    discoveryKey: key
+});
+
+let cell2 = new Cell({
+    discoveryKey: key,
+    sparse: true
+});
+
+
+
+
+(async function() {
+    console.log('cool');
+
+    let net = await cell.join();
+
+    net.once('connection', () => {
+        console.log('Connected')
+    });
+
+    console.log(net);
+
+    console.log(`Sharing: ${cell.key.toString('hex')}\n`)
+
+
+    let net2 = await cell2.join();
+
+    net2.once('connection', () => {
+        console.log('Connected')
+    });
+
+})()
