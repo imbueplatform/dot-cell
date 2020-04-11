@@ -1,6 +1,10 @@
 
 import net from 'net';
+import Debug from 'debug';
+
 import { PeerConfig, SocketCallback } from '../common/types';
+
+const debug = Debug("imbue:cell:peer");
 
 export class Peer {
     
@@ -21,6 +25,8 @@ export class Peer {
 
         let { host, port } = this._config.peer;
 
+        debug(`connecting to ${host}:${port} via tcp`);
+
         return new Promise((res, rej) => {
 
             this._peerSocket = net.connect(port, host);
@@ -38,6 +44,7 @@ export class Peer {
     }
 
     private onSocketTimeout(): void {
+        debug(`socket timedout`);
         this.destroyDeadSockets(true);
         throw new Error("Timedout")
     }
@@ -62,6 +69,8 @@ export class Peer {
 
             let { host, port } = this._config.peer;
 
+            debug(`connecting to ${host}:${port} via utp`);
+
             let utp = this._config.cellNetworkResource.utp.connect(port, host);
 
             utp.on("error", () => (err: Error) => onProtocolError(err, utp));
@@ -73,10 +82,12 @@ export class Peer {
 
         let onOpen = (err: Error) => {
             if(err) return onError(err);
+            debug(`holepunching`);
             this._config.cellNetworkResource.discovery.holepunch(this._config.peer, onHolePunch)
         }
 
         let onClose = (socket: net.Socket) => {
+            debug(`removing socket`);
             this._config.cellNetworkResource.sockets.delete(socket)
             onError(undefined);
         }
@@ -88,6 +99,8 @@ export class Peer {
             this.destroyDeadSockets();
 
             clearTimeout(this._timeout as NodeJS.Timeout);
+
+            debug(`connected to ${socket.address()}`);
 
             this._connected = true;
             this._config.cellNetworkResource.sockets.add(socket);
@@ -107,6 +120,8 @@ export class Peer {
     }
 
     private destroyDeadSockets(destroyAllSockets: boolean = false): void {
+        debug(`destroying sockets`);
+
         this._activeSockets.forEach((socket) => {
             if(!destroyAllSockets && (socket !== this._peerSocket))
                 socket.destroy();

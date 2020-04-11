@@ -1,8 +1,9 @@
 
-import { network } from './network/network-back';
+import { network } from './network-back';
 import fs from 'fs';
+import Debug from 'debug';
 
-const debug = require('debug')('imbue-cell')
+const debug = Debug("imbue:cell");
 
 const noop = () => {}
 
