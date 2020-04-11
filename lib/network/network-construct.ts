@@ -122,13 +122,24 @@ export class CellNetworkResource extends Nanoresource {
         if(!ipAddress) 
             return undefined;
 
+        debug('got local IP address: %0', ipAddress)
+
         return {
             host: ipAddress,
             port: (this._tcpServer.address() as net.AddressInfo).port
         }
     }
 
-    private _open(): void {
+    private createDiscovery(): any {
+        let { ephemeral, bootstrap } = this._config;
+        return Discovery({
+            bootstrap,
+            ephemeral,
+            socket: this._utpServer
+        })
+    }
+
+    private _open(cb: Function): void {
 
         let runner = (): Promise<void> => {
             return listenTcpUdp(this._tcpServer, this._utpServer, this._config.port as number).then(() => {
@@ -140,12 +151,34 @@ export class CellNetworkResource extends Nanoresource {
         backoff(5, runner, 500)
     }
 
-    private createDiscovery(): any {
-        let { ephemeral, bootstrap } = this._config;
-        return Discovery({
-            bootstrap,
-            ephemeral,
-            socket: this._utpServer
-        })
-    }
+    private _close(cb: Function): void {
+        
+        let missing = 2
+
+        let onClose = () => {
+            if (--missing) 
+                return;
+
+            this._discovery = undefined;
+            this._config.onClose();
+
+            cb();
+        }
+
+        let onDiscoveryClose = () => {
+
+            this._sockets.forEach((socket) => socket.destroy())
+            this._sockets.clear()
+      
+            this._tcpServer.close()
+            this._utpServer.close()
+      
+            this._tcpServer.on('close', onClose)
+            this._utpServer.on('close', onClose)
+      
+        }
+    
+        this._discovery.destroy()
+        this._discovery.on('close', onDiscoveryClose)
+      }
 }

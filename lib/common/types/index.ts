@@ -10,6 +10,10 @@ export interface OnBind {
     (): void;
 }
 
+export interface OnClose {
+    (): void;
+}
+
 export interface NetworkConstructConfig {
     port?: Number,
     broadcastLocalAddress?: Boolean,
@@ -18,6 +22,7 @@ export interface NetworkConstructConfig {
     announce?: Boolean,
     onSocket: OnSocket,
     onBind: OnBind
+    onClose: OnClose
 }
 
 export type NetworkInterfaceInfo = {
