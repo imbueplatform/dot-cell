@@ -2,13 +2,8 @@
 import os from 'os';
 import net from 'net';
 
-type NetworkInterfaceInfo = {
-    [index: string]: os.NetworkInterfaceInfo[]
-}
+import { NetworkInterfaceInfo, ErrorFunction } from '../types';
 
-interface ErrorFunction {
-    (err?: Error): void
-}
 
 /**
  * Get the local IPv4 Address

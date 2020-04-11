@@ -1,6 +1,4 @@
-interface EmptyFunction {
-    (): Promise<void>
-}
+import { EmptyFunction } from '../types'
 
 export const pause = (duration: number): Promise<void> => {
     return new Promise((res) => setTimeout(res, duration));
