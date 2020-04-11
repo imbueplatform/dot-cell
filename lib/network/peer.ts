@@ -1,7 +1,6 @@
 
 import net from 'net';
 import { PeerConfig, SocketCallback } from '../common/types';
-import { Peer } from './p'
 
 export class Peer {
     
