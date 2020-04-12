@@ -32,9 +32,6 @@ export class Peer {
             this._peerSocket = net.connect(port, host);
             this._activeSockets.push(this._peerSocket);
     
-            this._timeout = setTimeout(this.onSocketTimeout.bind(this), this._config.connectionTimeout);
-    
-    
             this.setupSocket((err, socket) => {
                 if(err) return rej(err);
                 return res(socket);
@@ -43,16 +40,16 @@ export class Peer {
         });
     }
 
-    private onSocketTimeout(): void {
-        debug(`socket timedout`);
-        this.destroyDeadSockets(true);
-        throw new Error("Timedout")
-    }
-
     private setupSocket(callback: SocketCallback): void {
         
+        let onSocketTimeout = (socket: net.Socket) => {
+            debug(`socket timedout:`, socket.address());
+            this.destroyDeadSockets(true);
+            callback(new Error(`socket timedout: ${socket.address()}`));
+        }
+
         let onError = (err?: Error) => {
-            if(!--this._closes !&& this._connected && !this._timedOut)
+            if(!--this._closes && !this._connected && !this._timedOut)
             {
                 clearTimeout(this._timeout as NodeJS.Timeout);
                 callback(err || new Error("Sockets failed"));
@@ -100,12 +97,14 @@ export class Peer {
 
             clearTimeout(this._timeout as NodeJS.Timeout);
 
-            debug(`connected to ${socket.address()}`);
+            debug(`connected to: `, socket.address());
 
             this._connected = true;
             this._config.cellNetworkResource.sockets.add(socket);
         }
         
+        this._timeout = setTimeout(() => onSocketTimeout(this._peerSocket as net.Socket), this._config.connectionTimeout);
+
         this._peerSocket?.setNoDelay(true);
 
         this._peerSocket?.on("error", (err: Error) => onProtocolError(err, this._peerSocket as net.Socket));

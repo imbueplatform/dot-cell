@@ -17,6 +17,13 @@ let onBind = () => {
     console.log('binding...')
 }
 
+let onPeer = (peer) => {
+    cnr2.connect(peer)
+        .then((socket) => {
+            socket.write('WOW!!!')
+        })
+}
+
 let announcer = new CellNetworkResource({
     announce: true,
     broadcastLocalAddress: true,
@@ -50,7 +57,7 @@ cnr2.attach()
     .then(() => {
         return cnr2.lookup(key);
     }).then((topic) => {
-        topic.on('peer', console.log);
-    });
+        topic.on('peer', onPeer);
+    }).catch((err) => console.log(err))
 
     

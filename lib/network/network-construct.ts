@@ -173,7 +173,7 @@ export class CellNetworkResource extends Nanoresource {
     }
 
     private removeSocket(socket: net.Socket): void {
-        debug("removing socket %0", socket);
+        debug("removing socket for:", socket.address());
         this._sockets.delete(socket);
     }
 
