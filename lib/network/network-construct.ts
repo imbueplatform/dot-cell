@@ -141,8 +141,6 @@ export class CellNetworkResource extends Nanoresource {
                 length: config.length || 0
             })
 
-            debug('announce config:', config);
-
             let topic: any = this._discovery.announce(key, config)
             
             return res(topic);

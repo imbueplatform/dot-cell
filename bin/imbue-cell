@@ -1,20 +1,22 @@
 #! /usr/bin/env node
 
+let debug = require('debug')("imbue:cell:main");
+
 let { CellNetworkResource } = require('../dist')
 
 
 let key = Buffer.alloc(32);
 
 let onSocket = (socket, isTcp) => {
-    console.log('socket connected...')
+    debug(`callback: ${isTcp ? 'tcp' : 'utp'} socket connected:`, socket.address());
 }
 
 let onClose = () => {
-    console.log('closing...')
+    debug('clalback: closing socket');
 }
 
 let onBind = () => {
-    console.log('binding...')
+    debug('callback: binding socket');
 }
 
 let onPeer = (peer) => {
@@ -22,6 +24,10 @@ let onPeer = (peer) => {
         .then((socket) => {
             socket.write('WOW!!!')
         }).catch((err) => console.log)
+}
+
+let onAnnouncePeer = (peer) => {
+    debug('announcement peer discovered:', peer)
 }
 
 let announcer = new CellNetworkResource({
@@ -49,7 +55,7 @@ announcer.attach().then(() => {
         lookup: true
     });
 }).then((topic) => {
-    topic.on('peer', console.log);
+    topic.on('peer', onAnnouncePeer);
 }).catch((err) => console.log(err))
 
 
