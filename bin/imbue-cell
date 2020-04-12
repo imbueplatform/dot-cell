@@ -21,7 +21,7 @@ let onPeer = (peer) => {
     cnr2.connect(peer)
         .then((socket) => {
             socket.write('WOW!!!')
-        })
+        }).catch((err) => console.log)
 }
 
 let announcer = new CellNetworkResource({

@@ -71,7 +71,7 @@ export class CellNetworkResource extends Nanoresource {
 
     public async connect(peer: any): Promise<net.Socket> {
 
-        debug("connecting to peer: ", peer);
+        debug(`connecting to peer: ${peer.host}:${peer.port}`);
 
         return new Peer({
             peer: peer,

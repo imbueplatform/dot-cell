@@ -111,7 +111,7 @@ export class Peer {
         this._peerSocket?.on("connect", () => onConnect(this._peerSocket as net.Socket));
         this._peerSocket?.on("close", () => onClose(this._peerSocket as net.Socket));
 
-        if(!this._config.peer.referer) 
+        if(!this._config.peer.referrer) 
             return;
 
         this._closes++;
