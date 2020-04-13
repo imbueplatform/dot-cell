@@ -40,6 +40,7 @@ let announcer = new CellNetworkResource({
     onClose: onClose
 });
 
+/*
 let cnr2 = new CellNetworkResource({
     announce: true,
     broadcastLocalAddress: true,
@@ -49,7 +50,7 @@ let cnr2 = new CellNetworkResource({
     onBind: onBind,
     onClose: onClose
 });
-
+*/
 announcer.attach().then(() => {
     return announcer.announce(key, {
         lookup: true
@@ -58,12 +59,12 @@ announcer.attach().then(() => {
     topic.on('peer', onAnnouncePeer);
 }).catch((err) => console.log(err))
 
-
+/*
 cnr2.attach()
     .then(() => {
         return cnr2.lookup(key);
     }).then((topic) => {
         topic.on('peer', onPeer);
     }).catch((err) => console.log(err))
-
+*/
     
