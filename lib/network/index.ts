@@ -1,10 +1,12 @@
-import { Cell } from './cell';
-import { CellNetworkResource } from './network-construct';
-import { Peer } from './peer'
+//import { Cell } from './cell';
+import { CellNetworkResource } from './core/network-construct';
+import { Peer } from './core/peer'
 import { network } from './network-back'
+import { CellPeer, PeerQueue } from './cell';
 
 export {
-    Cell,
+    CellPeer,
+    PeerQueue,
     CellNetworkResource,
     Peer,
     network

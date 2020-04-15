@@ -58,3 +58,10 @@ export const listenTcpUdp = (tcpServer: net.Server, utpServer: net.Server, port:
         });
     });
 }
+
+export const toId = (peer: any, multiplex: Boolean): string => {
+    const baseId = `${peer.host}:${peer.port}`;
+    if(multiplex)
+        return baseId;
+    return `${baseId}${(peer.topic ? '@' + peer.topic.toString('hex') : '')}`;
+}

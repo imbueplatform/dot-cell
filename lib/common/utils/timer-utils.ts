@@ -1,19 +1,19 @@
 import { EmptyFunction } from '../types'
 
-export class Timer {
 
-    private _time: number = 0;
-    private _interval: NodeJS.Timeout | undefined;
-    private _pending: any[] = [];
-    private _next: any[] = [];
-    private _function: any;
+export class Timer {
+    protected _time: number = 0;
+    protected _interval: NodeJS.Timeout | undefined;
+    protected _pending: any[] = [];
+    protected _next: any[] = [];
+    protected _function: any;
 
     constructor(time: number, func: any) {
         this._time = time;
         this._function = func;
     }
 
-    private onTick(): void {
+    protected onTick(): void {
         if(!this._next.length && !this._pending.length)
             return;
 
@@ -24,15 +24,24 @@ export class Timer {
         this._pending = [];
     }
 
+    public destroy(): void {}
+    public push(info?: any): void {}
+}
+
+export class QueueTimer extends Timer {
+
+    constructor(time: number, func: any) {
+        super(time, func);
+    }
+
     public destroy(): void {
         clearInterval(this._interval as NodeJS.Timeout);
         this._interval = undefined;
     }
 
-    public push(info: any): void {
+    public push(info?: any): void {
         if(!this._interval) 
             this._interval = setInterval(this.onTick.bind(this), Math.floor(this._time * 0.66))
-        
         this._pending.push(info);
     }
 }
@@ -42,7 +51,7 @@ export class Timer {
  * @param time time delay
  * @param func function
  */
-export const createTimer = (time: number, func: any): Timer => new Timer(time, func);
+export const createQueueTimer = (time: number, func: any): QueueTimer => new QueueTimer(time, func);
 
 /**
  * Pause utility promise function.

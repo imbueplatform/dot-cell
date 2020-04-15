@@ -26,7 +26,8 @@
     "pump": "^3.0.0",
     "debug": "^4.1.1",
     "utp-native": "2.1.7",
-    "nanoresource": "^1.3.0"
+    "nanoresource": "^1.3.0",
+    "shuffled-priority-queue": "^2.1.0"
   },
   "devDependencies": {},
   "lint-staged": {

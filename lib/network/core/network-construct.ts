@@ -5,8 +5,8 @@ import Nanoresource from 'nanoresource';
 import Discovery from '@hyperswarm/discovery'
 import Debug from 'debug';
 
-import { NetworkConstructConfig, ErrorFunction, AnnounceConfig } from '../common/types';
-import { backoff, listenTcpUdp, localIpAddress, noop } from "../common/utils";
+import { NetworkConstructConfig, ErrorFunction, AnnounceConfig } from '../../common/types';
+import { backoff, listenTcpUdp, localIpAddress, noop } from "../../common/utils";
 import { Peer } from './peer';
 
 const debug = Debug("imbue:cell:network");
@@ -22,7 +22,6 @@ export class CellNetworkResource extends Nanoresource {
     private _utpServer: any;
     private _sockets: Set<net.Socket> = new Set();
     private _discovery: any;
-    private _peer: Peer | undefined;
 
     constructor(config: NetworkConstructConfig) {
         super();
@@ -51,8 +50,16 @@ export class CellNetworkResource extends Nanoresource {
         return this._tcpServer;
     }
 
+    public set tcp(server: net.Server) {
+        this._tcpServer = server;
+    }
+
     public get utp(): any {
         return this._utpServer;
+    }
+
+    public set utp(server: net.Server) {
+        this._utpServer = server;
     }
 
     public get sockets(): Set<net.Socket> {

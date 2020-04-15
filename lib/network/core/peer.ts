@@ -2,7 +2,7 @@
 import net from 'net';
 import Debug from 'debug';
 
-import { PeerConfig, SocketCallback } from '../common/types';
+import { PeerConfig, SocketCallback } from '../../common/types';
 
 const debug = Debug("imbue:cell:peer");
 
