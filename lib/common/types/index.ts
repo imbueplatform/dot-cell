@@ -33,8 +33,12 @@ export interface ErrorFunction {
     (err?: Error): void
 }
 
+export interface EmptyAsyncFunction {
+    (): Promise<void>
+}
+
 export interface EmptyFunction {
-    (): Promise<void> | void
+    (): void
 }
 
 export interface PeerConfig {

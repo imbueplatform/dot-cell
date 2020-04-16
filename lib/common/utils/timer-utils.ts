@@ -1,4 +1,4 @@
-import { EmptyFunction } from '../types'
+import { EmptyAsyncFunction } from '../types'
 
 
 export class Timer {
@@ -63,7 +63,7 @@ export const pause = (duration: number): Promise<void> => {
 /**
  * Exponential backoff utility promise function.
  */
-export const backoff = (retries: number, callback: EmptyFunction, delay: number = 500): Promise<void> => {
+export const backoff = (retries: number, callback: EmptyAsyncFunction, delay: number = 500): Promise<void> => {
     return callback().catch((err) => 
         retries > 1 ? 
             pause(delay).then(() => backoff(retries - 1, callback, delay * 2)) : 
