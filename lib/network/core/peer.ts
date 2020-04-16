@@ -2,7 +2,7 @@
 import net from 'net';
 import Debug from 'debug';
 
-import { PeerConfig, SocketCallback } from '../../common/types';
+import { PeerConfig, SocketCallback, PeerResponse } from '../../common/types';
 
 const debug = Debug("imbue:cell:peer");
 
@@ -21,7 +21,11 @@ export class Peer {
         this._config = config;
     }
 
-    public connect(): Promise<net.Socket> {
+    get socket(): net.Socket | undefined {
+        return this._peerSocket;
+    }
+
+    public connect(): Promise<PeerResponse> {
 
         let { host, port } = this._config.peer;
 
@@ -101,6 +105,11 @@ export class Peer {
 
             this._connected = true;
             this._config.cellNetworkResource.sockets.add(socket);
+
+            callback(undefined, {
+                socket: socket,
+                isTcp: this.socket === socket
+            })
         }
         
         this._timeout = setTimeout(() => onSocketTimeout(this._peerSocket as net.Socket), this._config.connectionTimeout);

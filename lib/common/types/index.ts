@@ -34,7 +34,7 @@ export interface ErrorFunction {
 }
 
 export interface EmptyFunction {
-    (): Promise<void>
+    (): Promise<void> | void
 }
 
 export interface PeerConfig {
@@ -44,7 +44,12 @@ export interface PeerConfig {
 }
 
 export interface SocketCallback {
-    (err?: Error, socket?: net.Socket): void
+    (err?: Error, peer?: PeerResponse): void
+}
+
+export interface PeerResponse {
+    socket: net.Socket,
+    isTcp: boolean
 }
 
 export interface AnnounceConfig {
@@ -53,6 +58,7 @@ export interface AnnounceConfig {
     includeLength: boolean,
     port: number,
     length: number
+    announce: boolean
 }
 
 export enum CellStatus {
@@ -82,3 +88,18 @@ export enum QueueDelay {
     FORGET_UNRESPONSIVE = 7500,
     FORGET_BANNED = Infinity
 };
+
+export interface ValidatePeerFunction {
+    (peer?: any): Promise<void> | void
+}
+
+export interface CellConfig {
+    maxServerSockets: number,
+    maxClientSockets: number,
+    maxPeers: number,
+    bootstrap: string[],
+    ephemeral: Boolean,
+    queue: Object,
+    announce: Boolean,
+    validatePeer: ValidatePeerFunction
+}

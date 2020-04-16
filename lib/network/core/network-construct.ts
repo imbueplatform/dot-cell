@@ -5,7 +5,7 @@ import Nanoresource from 'nanoresource';
 import Discovery from '@hyperswarm/discovery'
 import Debug from 'debug';
 
-import { NetworkConstructConfig, ErrorFunction, AnnounceConfig } from '../../common/types';
+import { NetworkConstructConfig, ErrorFunction, AnnounceConfig, PeerResponse } from '../../common/types';
 import { backoff, listenTcpUdp, localIpAddress, noop } from "../../common/utils";
 import { Peer } from './peer';
 
@@ -58,7 +58,7 @@ export class CellNetworkResource extends Nanoresource {
         return this._utpServer;
     }
 
-    public set utp(server: net.Server) {
+    public set utp(server: any) {
         this._utpServer = server;
     }
 
@@ -66,8 +66,12 @@ export class CellNetworkResource extends Nanoresource {
         return this._sockets;
     }
 
-    public attach(): Promise<any> {
+    public attach(port?: Number): Promise<any> {
+        
+        this._config.port = this._config.port || port;
+
         debug("attaching to ", this._config.port);
+
         return new Promise((res, rej) => {
             this.open((err: Error) => {
                 if (err) return rej(err);
@@ -76,7 +80,7 @@ export class CellNetworkResource extends Nanoresource {
         });
     }
 
-    public async connect(peer: any): Promise<net.Socket> {
+    public async connect(peer: any): Promise<PeerResponse> {
 
         debug(`connecting to peer: ${peer.host}:${peer.port}`);
 
@@ -128,7 +132,7 @@ export class CellNetworkResource extends Nanoresource {
         });
     }
 
-    public announce(key: Buffer, config: AnnounceConfig = { lookup: false, includeLength: false, length, port: 0 }): Promise<any> {
+    public announce(key: Buffer, config: AnnounceConfig = { announce: false, lookup: false, includeLength: false, length, port: 0 }): Promise<any> {
 
         debug('performing announce:', key);
 
