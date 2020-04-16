@@ -1,5 +1,8 @@
 import { EventEmitter } from 'events';
 import { CellPriority, CellStatus } from '../../common/types';
+import Debug from 'debug';
+
+const debug = Debug("imbue:cell-peer");
 
 export class CellPeer extends EventEmitter {
 
@@ -28,10 +31,12 @@ export class CellPeer extends EventEmitter {
     }
 
     set duplicate(value: Boolean) {
+        debug('set duplicate()', value);
         this._duplicate = value;
     }
 
     get duplicate(): Boolean {
+        debug('get duplicate()', this._duplicate);
         return this._duplicate;
     }
 

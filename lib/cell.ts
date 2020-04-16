@@ -1,22 +1,14 @@
 import { EventEmitter } from 'events'
 import net from 'net';
 
-import {} from './common/utils'
-import { EmptyFunction, CellConfig, ErrorFunction, PeerResponse, AnnounceConfig, ValidatePeerFunction } from './common/types';
-import { CellNetworkResource, Peer, PeerQueue, CellPeer } from './network';
+import { EmptyFunction, CellConfig, ErrorFunction, PeerResponse, AnnounceConfig, ValidatePeerFunction, CellElements } from './common/types';
+import { CellNetworkResource, PeerQueue, CellPeer } from './network';
+import Debug from 'debug';
+
+const debug = Debug("imbue:cell-peer");
 
 interface CellElementsIndex {
     [index: string]: any 
-}
-
-export enum CellElements {
-    DRAIN = 'cell.drain',
-    INCREMENT_PEER_COUNT = 'cell.incrementPeerCount',
-    DECREMENT_PEER_COUNT = 'cell.decrementPeerCount',
-    LEAVE = 'cell.leave',
-    QUEUE = 'cell.queue',
-    FLUSH = 'cell.flush',
-    STATUS = 'cell.status'
 }
 
 export class Cell extends EventEmitter {
@@ -73,6 +65,8 @@ export class Cell extends EventEmitter {
     }
 
     [CellElements.DRAIN] (queue: PeerQueue): EmptyFunction {
+
+        debug(`${CellElements.DRAIN}()`);
 
         const onAttempt = () => {
             for(let i = 0; i < this._ce[CellElements.FLUSH].length; i++) {
@@ -149,6 +143,9 @@ export class Cell extends EventEmitter {
     }
 
     [CellElements.LEAVE] (key: Buffer, onLeave: Function): void {
+
+        debug(`${CellElements.LEAVE}()`, key);
+
         const domain: any = this._network.discovery._domain(key);
         const topics: any = this._network.discovery._domain.get(domain);
 
@@ -165,6 +162,8 @@ export class Cell extends EventEmitter {
     }
 
     [CellElements.INCREMENT_PEER_COUNT] (): void {
+        debug(`${CellElements.INCREMENT_PEER_COUNT}()`);
+
         this._peers++;
         this._open = this._peers < this._maxPeers;
 
@@ -175,6 +174,9 @@ export class Cell extends EventEmitter {
     }
 
     [CellElements.DECREMENT_PEER_COUNT] (): void {
+
+        debug(`${CellElements.DECREMENT_PEER_COUNT}()`);
+
         this._peers--;
         if(this._open)
             return;
@@ -190,6 +192,9 @@ export class Cell extends EventEmitter {
     // "I am now certain, no doubt in my mind, the universe is computational and of sort of equivalent power to something like a touring machine."
 
     public join(key: Buffer, opts: AnnounceConfig = { announce: false, lookup: false, includeLength: false, length, port: 0 }, onJoin?: Function): void {
+
+        debug('join()', key, opts);
+
         if(this._destroyed)
             throw Error('destroyed');
 
@@ -230,6 +235,8 @@ export class Cell extends EventEmitter {
     }
 
     public flush(): Promise<void> {
+        debug('flush()');
+
         if(this._destroyed)
             throw Error('destroyed');
         return new Promise((res, rej) => {
@@ -257,16 +264,19 @@ export class Cell extends EventEmitter {
     }
 
     public listen(port?: Number): Promise<any> {
+        debug('listen()', port);
         if(this._destroyed)
             throw Error('destroyed');
         return this._network.attach(port)
     }
 
     public status(key: Buffer): string | undefined {
+        debug('status()'), key;
         return this._ce[CellElements.STATUS].get(key.toString('hex')) || undefined;
     }
 
     public connect(peer: any): Promise<PeerResponse> {
+        debug('connect()', peer);
         if(this._destroyed)
             throw Error('destroyed');
         return this._network.connect(peer);
@@ -283,6 +293,8 @@ export class Cell extends EventEmitter {
     }
 
     public leave(key: Buffer, onLeave: Function): void{
+        debug('leave()');
+
         if(!Buffer.isBuffer(key))
             throw Error('missing key');
 
@@ -300,6 +312,8 @@ export class Cell extends EventEmitter {
     }
 
     public destroy(callback: ErrorFunction): void {
+        debug('destroy()');
+
         this._destroyed = true;
         this._ce[CellElements.QUEUE].destroy();
         this._network.close();
@@ -326,10 +340,12 @@ export class Cell extends EventEmitter {
     }
 
     private onSocketBind(): void {
+        debug('onSocketBind()');
         this.emit('listening');
     }
 
     private onSocketClose(): void {
+        debug('onSocketClose()');
         this.emit('close');
     }
 }

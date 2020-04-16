@@ -107,3 +107,13 @@ export interface CellConfig {
     announce: Boolean,
     validatePeer: ValidatePeerFunction
 }
+
+export enum CellElements {
+    DRAIN = 'cell.drain',
+    INCREMENT_PEER_COUNT = 'cell.incrementPeerCount',
+    DECREMENT_PEER_COUNT = 'cell.decrementPeerCount',
+    LEAVE = 'cell.leave',
+    QUEUE = 'cell.queue',
+    FLUSH = 'cell.flush',
+    STATUS = 'cell.status'
+}
