@@ -11,6 +11,10 @@ interface CellElementsIndex {
     [index: string]: any 
 }
 
+const MAX_SERVER_SOCKETS = Infinity
+const MAX_CLIENT_SOCKETS = Infinity
+const MAX_PEERS = 24
+
 export class Cell extends EventEmitter {
 
     private _network: CellNetworkResource;
@@ -28,40 +32,44 @@ export class Cell extends EventEmitter {
     private _open: boolean = false;
     private _connections: Set<net.Socket> = new Set();
 
-    private _validatePeer: ValidatePeerFunction;
+    private _validatePeer: ValidatePeerFunction = () => true;
 
     private _ce: CellElementsIndex = {};
 
-    constructor(private config: CellConfig) {
+    constructor(private config?: CellConfig) {
         super();
 
         this._network = new CellNetworkResource({
-            ephemeral: config.ephemeral,
-            bootstrap: config.bootstrap,
-            announce: !!config.announce,
+            ephemeral: config?.ephemeral || true,
+            bootstrap: config?.bootstrap || undefined,
+            announce: !!config?.announce || false,
             onBind: this.onSocketBind.bind(this),
             onSocket: this.onSockeConnected.bind(this),
             onClose: this.onSocketClose.bind(this)
         });
 
-        this._network.tcp.maxConnections = this.config.maxServerSockets;
-        this._network.utp.maxConnections = this.config.maxServerSockets;
+        this._network.tcp.maxConnections = this.config?.maxServerSockets || MAX_SERVER_SOCKETS;
+        this._network.utp.maxConnections = this.config?.maxServerSockets || MAX_SERVER_SOCKETS;
 
-        this._maxPeers = this.config.maxPeers;
-        this._maxServerSockets = this.config.maxServerSockets;
-        this._maxClientSockets = this.config.maxClientSockets;
+        this._maxPeers = this.config?.maxPeers || MAX_PEERS;
+        this._maxServerSockets = this.config?.maxServerSockets || MAX_SERVER_SOCKETS;
+        this._maxClientSockets = this.config?.maxClientSockets || MAX_SERVER_SOCKETS;
 
-        this._open = this._peers < this.config.maxPeers;
+        this._open = this._peers < this._maxPeers;
 
         this._connections = this._network.sockets;
 
-        this._validatePeer = this.config.validatePeer;
+        this._validatePeer = this.config?.validatePeer || this.__validate;
 
         this._ce[CellElements.STATUS] = new Map<any, any>();
         this._ce[CellElements.FLUSH] = [];
-        this._ce[CellElements.QUEUE] = new PeerQueue(this.config.queue);
+        this._ce[CellElements.QUEUE] = new PeerQueue(this.config?.queue);
         this._ce[CellElements.QUEUE].on('readable', this[CellElements.DRAIN](this._ce[CellElements.QUEUE]));
 
+    }
+
+    __validate(peer?: any): Boolean {
+        return true;
     }
 
     [CellElements.DRAIN] (queue: PeerQueue): EmptyFunction {
@@ -222,7 +230,7 @@ export class Cell extends EventEmitter {
                 topic.on('update', () => this.emit('updated', { key }));
                 if(opts.lookup) {
                     topic.on('peer', (peer: any) => {
-                        if(!this._validatePeer(peer)) {
+                        if(this._validatePeer && !this._validatePeer(peer)) {
                             this.emit('peer-rejected', peer);
                             return;
                         }

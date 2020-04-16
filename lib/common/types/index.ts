@@ -94,7 +94,7 @@ export enum QueueDelay {
 };
 
 export interface ValidatePeerFunction {
-    (peer?: any): Promise<void> | void
+    (peer?: any): Boolean
 }
 
 export interface CellConfig {
