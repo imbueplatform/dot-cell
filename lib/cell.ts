@@ -313,7 +313,16 @@ export class Cell extends EventEmitter {
     }
 
     private onSockeConnected(socket: net.Socket, isTcp: Boolean): void {
-
+        const info = new CellPeer(undefined, this._ce[CellElements.QUEUE]);
+        info.connected(socket, isTcp);
+        this.emit('connection', socket, info);
+        this._serverSockets++;
+        this[CellElements.INCREMENT_PEER_COUNT]();
+        this.once('close', () => {
+            this._serverSockets--;
+            this.emit('disconnection', socket, info);
+            this[CellElements.DECREMENT_PEER_COUNT]();
+        });
     }
 
     private onSocketBind(): void {
