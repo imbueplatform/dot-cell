@@ -6,6 +6,7 @@
     "sourceMap": true,
     "outDir": "dist",
     "strict": true,
+    "types": ["node"],
     "noImplicitAny": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
