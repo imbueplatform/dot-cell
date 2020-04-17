@@ -10,7 +10,7 @@
     "prepublishOnly": "npx tsc",
     "imbue:dev": "tsc-watch --onSuccess \"node ./bin/imbue-cell\"",
     "imbue:test": "npx tsc && NODE_ENV=test LOG_LEVEL=off jest test/*.test.js",
-    "print:project": "asciify ' @imbueplatform/cell ' -f puffy"
+    "print:project": "figlet 'Imbue Cell'"
   },
   "repository": {
     "type": "git",
@@ -33,15 +33,15 @@
     "shuffled-priority-queue": "^2.1.0"
   },
   "devDependencies": {
-    "@types/jest": "^24.0.19",
-    "asciify": "^1.3.5",
-    "tslint": "^5.20.0",
+    "@types/jest": "^25.2.1",
+    "tslint": "^6.1.1",
     "tslint-jest": "1.0.5",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^25.3.0",
     "tslint-config-prettier": "1.18.0",
-    "jest": "^24.9.0",
-    "lint-staged": "^9.4.1",
-    "prettier": "^1.18.2"
+    "jest": "^25.3.0",
+    "lint-staged": "^10.1.3",
+    "prettier": "^2.0.4",
+    "figlet": "^1.3.0"
   },
   "lint-staged": {
     "*.js": [
