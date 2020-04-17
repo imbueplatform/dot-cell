@@ -5,7 +5,7 @@ import { EmptyFunction, CellConfig, ErrorFunction, PeerResponse, AnnounceConfig,
 import { CellNetworkResource, PeerQueue, CellPeer } from './network';
 import Debug from 'debug';
 
-const debug = Debug("imbue:cell-peer");
+const debug = Debug("imbue:cell");
 
 interface CellElementsIndex {
     [index: string]: any 

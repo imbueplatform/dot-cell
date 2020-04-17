@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import { CellPriority, CellStatus } from '../../common/types';
 import Debug from 'debug';
 
-const debug = Debug("imbue:cell-peer");
+const debug = Debug("imbue:cell:cellpeer");
 
 export class CellPeer extends EventEmitter {
 
