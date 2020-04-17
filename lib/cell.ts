@@ -199,7 +199,7 @@ export class Cell extends EventEmitter {
 
     // "I am now certain, no doubt in my mind, the universe is computational and of sort of equivalent power to something like a touring machine."
 
-    public join(key: Buffer, opts: AnnounceConfig = { announce: false, lookup: false, includeLength: false, length = 0, port: 0 }, onJoin?: Function): void {
+    public join(key: Buffer, opts: AnnounceConfig = { announce: false, lookup: false, includeLength: false, length: 0, port: 0 }, onJoin?: Function): void {
 
         debug('join()', key, opts);
 
