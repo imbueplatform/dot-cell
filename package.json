@@ -1,6 +1,6 @@
 {
   "name": "@imbueplatform/cell",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Imbue Network Cell",
   "bin": {
     "imbue-cell": "./bin/imbue-cell"
