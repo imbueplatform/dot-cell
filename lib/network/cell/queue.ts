@@ -18,7 +18,7 @@ export class PeerQueue extends EventEmitter {
 
     private _destroyed: boolean = false;
 
-    constructor(private _config?: PeerQueueConfig) {
+    constructor(private _config: PeerQueueConfig = {announce: false, multiplex: false }) {
         super();
 
         this._config = Object.assign(_config,{
