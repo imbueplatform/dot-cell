@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import { QueueDelay, CellPriority } from '../../common/types';
+import { QueueDelay, PeerQueueConfig } from '../../common/types';
 import { createQueueTimer, Timer } from '../../common/utils/timer-utils'
 import { CellPeer } from './cell-peer';
 import { toId } from '../../common/utils/network-utils';
@@ -18,12 +18,18 @@ export class PeerQueue extends EventEmitter {
 
     private _destroyed: boolean = false;
 
-    constructor(opt: any) {
+    constructor(private _config: PeerQueueConfig) {
         super();
 
-        this._multiplex = !!opt.multiplex || false;
+        this._config = Object.assign(_config,{
+            announce: false,
+            multiplex: false
+        })
 
-        this.initialiseQueues(opt);
+
+        this._multiplex = !!this._config.multiplex;
+
+        this.initialiseQueues();
 
     }
 
@@ -172,14 +178,14 @@ export class PeerQueue extends EventEmitter {
         this._queue = undefined;
     }
 
-    private initialiseQueues(opt: any): void {
+    private initialiseQueues(): void {
         const {
             requeue = [ QueueDelay.BACKOFF_S, QueueDelay.BACKOFF_M, QueueDelay.BACKOFF_L ],
             forget = {
                 unresponsive: QueueDelay.FORGET_UNRESPONSIVE,
                 banned: QueueDelay.FORGET_BANNED
             }
-        } = opt;
+        } = this._config;
 
         const backoff = [QueueDelay.BACKOFF_S, QueueDelay.BACKOFF_M, QueueDelay.BACKOFF_L, ...requeue.slice(3)];
 

@@ -65,6 +65,12 @@ export interface AnnounceConfig {
     announce: boolean
 }
 
+export interface PeerQueueConfig {
+    [key: string]: any,
+    multiplex?: boolean,
+    announce?: boolean
+}
+
 export enum CellStatus {
     PROVEN = 0b1,
     RECONNECT = 0b10,
