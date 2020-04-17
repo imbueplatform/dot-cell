@@ -211,7 +211,7 @@ export class Cell extends EventEmitter {
 
         opts = Object.assign(opts,{
             announce: opts.announce || false,
-            includeLength: !!length || length === 0 || !!opts.includeLength,
+            includeLength: !!opts.length || opts.length === 0 || !!opts.includeLength,
             length: opts.length || 0,
             lookup: opts.lookup || false
         });
