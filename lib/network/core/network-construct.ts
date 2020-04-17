@@ -1,7 +1,9 @@
 
 import net from 'net';
 import utp from 'utp-native';
-import Nanoresource from 'nanoresource';
+
+let Nanoresource = require('nanoresource');
+
 import Discovery from '@hyperswarm/discovery'
 import Debug from 'debug';
 
