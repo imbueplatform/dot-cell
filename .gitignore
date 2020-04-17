@@ -298,8 +298,6 @@ public/
 # DynamoDB Local files
 .dynamodb/
 
-# npm package lock for `npn i aws-cdk`; if you don't want to pollute global install...
-package-lock.json
 
 # nixos / direnv
 shell.nix
