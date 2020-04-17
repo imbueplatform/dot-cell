@@ -18,7 +18,7 @@ export class PeerQueue extends EventEmitter {
 
     private _destroyed: boolean = false;
 
-    constructor(private _config: PeerQueueConfig) {
+    constructor(private _config?: PeerQueueConfig) {
         super();
 
         this._config = Object.assign(_config,{
@@ -179,13 +179,11 @@ export class PeerQueue extends EventEmitter {
     }
 
     private initialiseQueues(): void {
-        const {
-            requeue = [ QueueDelay.BACKOFF_S, QueueDelay.BACKOFF_M, QueueDelay.BACKOFF_L ],
-            forget = {
+        const requeue = [ QueueDelay.BACKOFF_S, QueueDelay.BACKOFF_M, QueueDelay.BACKOFF_L ];
+        const forget = {
                 unresponsive: QueueDelay.FORGET_UNRESPONSIVE,
                 banned: QueueDelay.FORGET_BANNED
-            }
-        } = this._config;
+            };
 
         const backoff = [QueueDelay.BACKOFF_S, QueueDelay.BACKOFF_M, QueueDelay.BACKOFF_L, ...requeue.slice(3)];
 

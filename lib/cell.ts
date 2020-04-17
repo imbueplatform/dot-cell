@@ -63,7 +63,7 @@ export class Cell extends EventEmitter {
 
         this._ce[CellElements.STATUS] = new Map<any, any>();
         this._ce[CellElements.FLUSH] = [];
-        this._ce[CellElements.QUEUE] = new PeerQueue(this.config?.queue);
+        this._ce[CellElements.QUEUE] = new PeerQueue();
         this._ce[CellElements.QUEUE].on('readable', this[CellElements.DRAIN](this._ce[CellElements.QUEUE]));
 
     }

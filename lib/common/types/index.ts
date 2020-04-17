@@ -109,7 +109,6 @@ export interface CellConfig {
     maxPeers: number,
     bootstrap: string[],
     ephemeral: Boolean,
-    queue: Object,
     announce: Boolean,
     validatePeer: ValidatePeerFunction
 }
