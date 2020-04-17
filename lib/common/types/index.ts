@@ -59,9 +59,9 @@ export interface PeerResponse {
 export interface AnnounceConfig {
     [key: string]: any,
     lookup: boolean,
-    includeLength: boolean,
-    port: number,
-    length: number
+    includeLength?: boolean,
+    port?: number,
+    length?: number
     announce: boolean
 }
 
