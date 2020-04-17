@@ -21,7 +21,7 @@ export class PeerQueue extends EventEmitter {
     constructor(opt: any) {
         super();
 
-        this._multiplex = !!opt.multiplex;
+        this._multiplex = !!opt.multiplex || false;
 
         this.initialiseQueues(opt);
 
