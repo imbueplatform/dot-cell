@@ -17,7 +17,6 @@ export class CellPeer extends EventEmitter {
     private _stream: any | undefined = undefined;
     private _duplicate: Boolean = false;
     private _topics: Array<any> = new Array<any>();
-    private _index: number = 0;
     private _dedup: any | undefined = undefined;
 
     constructor(peer: any, queue: any){

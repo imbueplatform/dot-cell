@@ -180,11 +180,6 @@ export class PeerQueue extends EventEmitter {
 
     private initialiseQueues(): void {
         const requeue = [ QueueDelay.BACKOFF_S, QueueDelay.BACKOFF_M, QueueDelay.BACKOFF_L ];
-        const forget = {
-                unresponsive: QueueDelay.FORGET_UNRESPONSIVE,
-                banned: QueueDelay.FORGET_BANNED
-            };
-
         const backoff = [QueueDelay.BACKOFF_S, QueueDelay.BACKOFF_M, QueueDelay.BACKOFF_L, ...requeue.slice(3)];
 
         const push = this.push.bind(this);
@@ -235,7 +230,11 @@ export class PeerQueue extends EventEmitter {
                 continue;
             }
             this._queue.add(info);
+            readable = true;
         }
+
+        if(empty && readable)
+            this.emit('readable');
     }
 
     private release(batch: CellPeer[]): void {

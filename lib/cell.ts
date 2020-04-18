@@ -53,7 +53,7 @@ export class Cell extends EventEmitter {
 
         this._maxPeers = this.config?.maxPeers || MAX_PEERS;
         this._maxServerSockets = this.config?.maxServerSockets || MAX_SERVER_SOCKETS;
-        this._maxClientSockets = this.config?.maxClientSockets || MAX_SERVER_SOCKETS;
+        this._maxClientSockets = this.config?.maxClientSockets || MAX_CLIENT_SOCKETS;
 
         this._open = this._peers < this._maxPeers;
 
@@ -195,6 +195,10 @@ export class Cell extends EventEmitter {
             this._network.tcp.maxConnections = this._maxServerSockets;
             this._network.utp.maxConnections = this._maxServerSockets;
         }
+    }
+
+    get connections(): Set<net.Socket> {
+        return this._connections;
     }
 
     // "I am now certain, no doubt in my mind, the universe is computational and of sort of equivalent power to something like a touring machine."
