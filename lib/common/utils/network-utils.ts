@@ -10,7 +10,7 @@ const debug = Debug("imbue:cell:network-utils");
  * Get the local IPv4 Address
  */
 export const localIpAddress = (): string | undefined => {
-    let networkInterfaces: NetworkInterfaceInfo = os.networkInterfaces();
+    let networkInterfaces: any = os.networkInterfaces();
 
     for(let name of Object.keys(networkInterfaces))
         for (let address of networkInterfaces[name])
