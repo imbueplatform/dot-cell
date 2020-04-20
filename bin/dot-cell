@@ -2,9 +2,12 @@
 
 let debug = require('debug')("imbue:cell:main");
 
-let { CellNetworkResource } = require('../dist')
+let { CellNetworkResource, findAvailablePort } = require('../dist')
 
 
+
+//findAvailablePort(8080).then((port) => console.log(port));
+/*
 let key = Buffer.alloc(32);
 
 let onSocket = (socket, isTcp) => {
@@ -39,7 +42,7 @@ let announcer = new CellNetworkResource({
     onBind: onBind,
     onClose: onClose
 });
-
+*/
 /*
 let cnr2 = new CellNetworkResource({
     announce: true,
@@ -51,6 +54,8 @@ let cnr2 = new CellNetworkResource({
     onClose: onClose
 });
 */
+
+/*
 announcer.attach().then(() => {
     return announcer.announce(key, {
         lookup: true
@@ -58,7 +63,7 @@ announcer.attach().then(() => {
 }).then((topic) => {
     topic.on('peer', onAnnouncePeer);
 }).catch((err) => console.log(err))
-
+*/
 /*
 cnr2.attach()
     .then(() => {

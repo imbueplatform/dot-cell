@@ -65,3 +65,49 @@ export const toId = (peer: any, multiplex: Boolean): string => {
         return baseId;
     return `${baseId}${(peer.topic ? '@' + peer.topic.toString('hex') : '')}`;
 }
+
+
+import http from 'http';
+
+/**
+ * Find available port utility function
+ * 
+ * @param start starting port
+ */
+export const findAvailablePort = (start: number = 5337): Promise<number> => {
+    return new Promise((res) => {
+
+        /**
+         * Nested `tryPort` helper function
+         * 
+         * @param nextPort next port number
+         */
+        const tryPort = (nextPort: number): void => {
+
+            //save current context port, then increment it in preparation for failure.
+            let currentPort = nextPort;
+            nextPort++;
+
+            // create a temporary http server
+            let tempServer = http.createServer();
+    
+            /**
+             * when an error event occurs (due to unavailable port),
+             * try again with the incremented port value
+             */
+            tempServer.on('error', () => tryPort(nextPort));
+
+            /**
+             * Try and listen on the current port.
+             * 
+             * If successful, close temp server and return the available port, 
+             * otherwise it will fire an error event.
+             */
+            tempServer.listen(currentPort, () => tempServer.close(() => res(currentPort)));
+        }
+
+        // kick it off ...
+        tryPort(start);
+    });
+}
+
