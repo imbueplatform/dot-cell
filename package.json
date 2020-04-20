@@ -1,6 +1,6 @@
 {
   "name": "@imbueplatform/dot-cell",
-  "version": "0.0.20",
+  "version": "0.0.21",
   "description": "D.O.T Network Cell",
   "bin": {
     "dot-cell": "./bin/dot-cell"
