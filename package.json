@@ -3,13 +3,13 @@
   "version": "0.0.18",
   "description": "D.O.T Network Cell",
   "bin": {
-    "imbue-cell": "./bin/dot-cell"
+    "dot-cell": "./bin/dot-cell"
   },
   "scripts": {
     "postinstall": "npx tsc",
     "prepublishOnly": "npx tsc",
-    "imbue:dev": "tsc-watch --onSuccess \"node ./bin/dot-cell\"",
-    "imbue:test": "npx tsc && NODE_ENV=test LOG_LEVEL=off jest test/*.test.js"
+    "dot:dev": "tsc-watch --onSuccess \"node ./bin/dot-cell\"",
+    "dot:test": "npx tsc && NODE_ENV=test LOG_LEVEL=off jest test/*.test.js"
   },
   "repository": {
     "type": "git",
