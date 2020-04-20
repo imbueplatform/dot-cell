@@ -1,20 +1,20 @@
 {
-  "name": "@imbueplatform/cell",
+  "name": "@imbueplatform/dot-cell",
   "version": "0.0.18",
-  "description": "Imbue Network Cell",
+  "description": "D.O.T Network Cell",
   "bin": {
-    "imbue-cell": "./bin/imbue-cell"
+    "imbue-cell": "./bin/dot-cell"
   },
   "scripts": {
     "postinstall": "npx tsc",
     "prepublishOnly": "npx tsc",
-    "imbue:dev": "tsc-watch --onSuccess \"node ./bin/imbue-cell\"",
+    "imbue:dev": "tsc-watch --onSuccess \"node ./bin/dot-cell\"",
     "imbue:test": "npx tsc && NODE_ENV=test LOG_LEVEL=off jest test/*.test.js",
-    "print:project": "figlet 'Imbue Cell'"
+    "print:project": "figlet 'D.O.T. Cell'"
   },
   "repository": {
     "type": "git",
-    "url": "ssh://git@github.com:imbueplatform/imbue-cell.git"
+    "url": "ssh://git@github.com:imbueplatform/dot-cell.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
