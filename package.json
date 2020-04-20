@@ -9,8 +9,7 @@
     "postinstall": "npx tsc",
     "prepublishOnly": "npx tsc",
     "imbue:dev": "tsc-watch --onSuccess \"node ./bin/dot-cell\"",
-    "imbue:test": "npx tsc && NODE_ENV=test LOG_LEVEL=off jest test/*.test.js",
-    "print:project": "figlet 'D.O.T. Cell'"
+    "imbue:test": "npx tsc && NODE_ENV=test LOG_LEVEL=off jest test/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -40,8 +39,7 @@
     "tslint-config-prettier": "1.18.0",
     "jest": "^25.3.0",
     "lint-staged": "^10.1.3",
-    "prettier": "^2.0.4",
-    "figlet-cli": "0.1.1"
+    "prettier": "^2.0.4"
   },
   "lint-staged": {
     "*.js": [
